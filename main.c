@@ -37,7 +37,10 @@ int map[10][10] = {
     {1,1,1,1,1,1,1,1,1,1}
 };
 
+int screen_height = 1920;
+int screen_width = 1080;
 
+int drawincenter = 240;
 
 
 
@@ -177,15 +180,15 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ca > 2*pi) ca -= 2*pi;
         distT = distT * cos(ca);
         float lineH = (MAPSIZE * 480) / distT;
-        if (lineH > 300) lineH = 300;
+        if (lineH > screen_width) lineH = screen_width;
         float factor = getScalingFactor(player->x, player->y, rx, ry);
         // sdl draw rect with width 1 and height distT
-        int width = 1920/(960);
+        int width = screen_height/(960);
         // draw ground
         SDL_SetRenderDrawColor(renderer, 50, 55, 0, 255);
-        SDL_Rect ground = {r * width, 240, width,1080 - (int)lineH};
+        SDL_Rect ground = {r * width, drawincenter - (int)lineH, width, screen_height - drawincenter + (int)lineH};
         SDL_RenderFillRect(renderer, &ground);
-        SDL_Rect rect = {r * width, 240 - (int)lineH, width, (int)(1080 * lineH/300)};
+        SDL_Rect rect = {r * width, drawincenter - (int)lineH, width, (int)(screen_width * lineH/200)};
         // draw rect
         if (disH < disV){
             SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
@@ -196,7 +199,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         SDL_RenderFillRect(renderer, &rect);
         // draw sky
         SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
-        SDL_Rect sky = {r * width, 0, width,240 - (int)lineH};
+        SDL_Rect sky = {r * width, 0, width, drawincenter - (int)lineH};
         SDL_RenderFillRect(renderer, &sky);
         
 
@@ -224,16 +227,16 @@ int main(){
     srand(time(NULL));
 
     // create window fullscreen
-    SDL_Window *window = SDL_CreateWindow("Raycasting", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_FULLSCREEN);
+    SDL_Window *window = SDL_CreateWindow("Raycasting", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_height, screen_width, SDL_WINDOW_FULLSCREEN);
     // create renderer
     SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
     // create int 2d array map
     //int map[5][5];
     //generateMap(map);
     printMap(map);
-    SDL_ShowCursor(SDL_DISABLE);
-    //set relative mouse mode
     //SDL_SetRelativeMouseMode(SDL_TRUE);
+    //hide cursor
+    SDL_ShowCursor(SDL_DISABLE);
     //declare player
     Player_t player;
     player.x = 100;
@@ -273,8 +276,8 @@ int main(){
                             continue;
                         case SDLK_q:
                             // move left
-                            player.x -= -sin(player.angle);
-                            player.y += -cos(player.angle);
+                            player.x += sin(player.angle);
+                            player.y -= cos(player.angle);
                             continue;
                         default:
                             break;
@@ -299,12 +302,16 @@ int main(){
 
                     // if mouse moved to up
                     if (event.motion.yrel > 0){
-                        //player.x += player.deltax;
-                        //player.y += player.deltay;
+                        drawincenter -= 5;
+                    }
+                    // if mouse moved to down
+                    if (event.motion.yrel < 0){
+                        drawincenter += 5;
                     }
 
-                    // keep mouse centered
-                    SDL_WarpMouseInWindow(window, 960, 540);
+                    // cancel mouse movement
+                    SDL_WarpMouseInWindow(window, screen_height/2, screen_width/2);
+
 
                     break;
 
