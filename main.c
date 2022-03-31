@@ -243,7 +243,10 @@ int main(){
     player.angle = pi/2;
     // get input
     // main loop
+    int start = 0;
+    int time;
     while(1){
+        start = SDL_GetTicks();
         // get input
         SDL_Event event;
         while(SDL_PollEvent(&event)){
@@ -258,20 +261,20 @@ int main(){
                             player.y += player.deltay;
                             continue;
                         case SDLK_d:
-                            player.angle += 0.1;
-                            if (player.angle > 2*pi) player.angle -= 2*pi;
-                            player.deltax = cos(player.angle);
-                            player.deltay = sin(player.angle);
+                            // move right
+                            player.x -= sin(player.angle);
+                            player.y += cos(player.angle);
+                            
+
                             continue;
                         case SDLK_s:
                             player.x -= player.deltax;
                             player.y -= player.deltay;
                             continue;
                         case SDLK_q:
-                            player.angle -= 0.1;
-                            if (player.angle < 0) {player.angle += 2*pi;}
-                            player.deltax = cos(player.angle);
-                            player.deltay = sin(player.angle);
+                            // move left
+                            player.x -= -sin(player.angle);
+                            player.y += -cos(player.angle);
                             continue;
                         default:
                             break;
@@ -293,6 +296,13 @@ int main(){
                         player.deltax = cos(player.angle);
                         player.deltay = sin(player.angle);
                     }
+
+                    // if mouse moved to up
+                    if (event.motion.yrel > 0){
+                        //player.x += player.deltax;
+                        //player.y += player.deltay;
+                    }
+
                     // keep mouse centered
                     SDL_WarpMouseInWindow(window, 960, 540);
 
@@ -327,6 +337,10 @@ int main(){
 
         // update screen
         SDL_RenderPresent(renderer);
+        time = SDL_GetTicks() - start;
+        if (time < 0) continue;
+        int sleepTime = (1000/60) - time;
+        if (sleepTime > 0) SDL_Delay(sleepTime);
     }
 }
 
