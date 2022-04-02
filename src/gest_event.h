@@ -2,6 +2,7 @@
 #define _GESTEVENT_HEADER_
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mouse.h>
 #include "main.h"
 //#include "entity.h"
 //#include "gameplay.h"

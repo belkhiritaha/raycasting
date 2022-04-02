@@ -29,7 +29,7 @@ void CreateWindow(){
 
     SDL_GetCurrentDisplayMode(0, &ScreenDimension);
 
-    window = SDL_CreateWindow("Explorateur 3000", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenDimension.w, ScreenDimension.h, SDL_WINDOW_FULLSCREEN_DESKTOP);
+    window = SDL_CreateWindow("Explorateur 3000", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenDimension.w, ScreenDimension.h, SDL_WINDOW_INPUT_GRABBED);
 
     if (window == NULL){
         printf("Couldn't create window");
@@ -42,6 +42,7 @@ void CreateWindow(){
         printf("Couldn't create renderer.");
         exit(EXIT_FAILURE);
     }
+
 
     if (TTF_Init() == -1)
     {
@@ -305,16 +306,11 @@ void AffichageMenu(){
 
 void AffichageNormal(){
     SDL_RenderClear(renderer);
-        // draw map all screen
-        
-        // draw ray
+    
     drawRay(&player, map, renderer);
     //drawMap(map, renderer);
     drawEnnemy(&ennemy, &player, renderer);
-
     drawCrosshair(&player, renderer);
-        
-        // update screen
     SDL_RenderPresent(renderer);
 }
 

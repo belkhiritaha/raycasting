@@ -62,6 +62,8 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                         drawincenter += 250 * SENSI;
                     }
 
+                    SDL_WarpMouseGlobal(screen_width/2, screen_height/2);
+
                     continue;
 
                 case SDL_KEYUP:
