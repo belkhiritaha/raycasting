@@ -23,6 +23,15 @@ typedef struct Player {
     float deltay;
 } Player_t;
 
+// define ennemy struct
+typedef struct Ennemy {
+    float x;
+    float y;
+    float angle;
+    float deltax;
+    float deltay;
+} Ennemy_t;
+
 // declare 10x10 matrix with only 1s and 0s
 int map[10][10] = {
     {1,0,0,0,0,1,1,1,1,1},
@@ -168,8 +177,8 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
             distT = disV;
         }
         // draw line
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        //SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
         ra+=DR/16;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
@@ -201,9 +210,61 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
         SDL_Rect sky = {r * width, 0, width, drawincenter - (int)lineH};
         SDL_RenderFillRect(renderer, &sky);
-        
 
+    }
+}
 
+// draw ennemy 
+void drawEnnemyonMap(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
+    // define vector of ennemy relative to player
+    float ennemy_angle = atan2(ennemy->y - player->y, ennemy->x - player->x);
+    float ennemy_dist = dist(ennemy->x, ennemy->y, player->x, player->y);
+    if (ennemy_angle < 0) ennemy_angle += 2*pi;
+    if (ennemy_angle > 2*pi) ennemy_angle -= 2*pi;
+    if (ennemy_angle >= player->angle - 30 * DR && ennemy_angle <= player->angle + 30 * DR){
+        // draw ennemy
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_Rect rect = {ennemy->x - ennemy_dist * cos(ennemy_angle), ennemy->y - ennemy_dist * sin(ennemy_angle), 10, 10};
+        SDL_RenderFillRect(renderer, &rect);
+    }
+}
+
+void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
+    int sens = 1;
+    float ennemy_angle = atan2(ennemy->y - player->y, ennemy->x - player->x);
+    if (ennemy_angle < 0) ennemy_angle += 2*pi;
+    if (ennemy_angle > 2*pi) ennemy_angle -= 2*pi;
+    float ennemy_dist = dist(ennemy->x, ennemy->y, player->x, player->y);
+    float ennemy_dist_x;
+    float ennemy_dist_y;
+    float tot;
+    int ennemy_width = 10;
+    
+
+    ennemy_dist_x = ennemy_dist * cos(ennemy_angle - player->angle);
+
+    if (ennemy_angle >= player->angle){
+        ennemy_dist_y = ennemy_dist * sin(ennemy_angle - player->angle);
+    }
+
+    else {
+        ennemy_dist_y = - ennemy_dist * sin(ennemy_angle - player->angle);
+        sens = -1;
+    }
+
+    tot = sqrt(3) * ennemy_dist_x;
+    
+    float base_triangle = 2 * ennemy_dist_x / sqrt(3);
+
+    if (ennemy_angle >= player->angle - 30 * DR && ennemy_angle <= player->angle + 30 * DR){
+        float distance = dist(player->x, player->y, ennemy->x, ennemy->y);
+        float ennemy_length = (MAPSIZE * 480) / distance;
+
+        if (ennemy_length > screen_height/5) ennemy_length = screen_height/5;
+
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect rect = {1080 + 2 * sens * (screen_width * ennemy_dist_y)/base_triangle, drawincenter + ennemy->y - ennemy_dist * sin(ennemy_angle), ennemy_width * screen_width / tot, ennemy_length};
+        SDL_RenderFillRect(renderer, &rect);
     }
 }
 
@@ -219,7 +280,7 @@ void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
             }
         }
     }
-}
+} 
 
 
 int main(){
@@ -244,6 +305,17 @@ int main(){
     player.deltax = 0;
     player.deltay = 0;
     player.angle = pi/2;
+
+    // declare ennemy
+    Ennemy_t ennemy;
+    ennemy.x = 200;
+    ennemy.y = 200;
+    ennemy.deltax = 0;
+    ennemy.deltay = 0;
+    ennemy.angle = pi/2;
+
+
+
     // get input
     // main loop
     int start = 0;
@@ -332,16 +404,22 @@ int main(){
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
         // draw map all screen
-        //drawMap(map, renderer);
-
-        // draw player
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        //SDL_Rect rect = {1066 + player.x, player.y, 10, 10};
-        //SDL_RenderFillRect(renderer, &rect);
         
         // draw ray
         drawRay(&player, map, renderer);
+        drawMap(map, renderer);
+        drawEnnemy(&ennemy, &player, renderer);
 
+                // draw player
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect rect = {1066 + player.x, player.y, 10, 10};
+        SDL_RenderFillRect(renderer, &rect);
+
+        // draw ennemy
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect rect2 = {1066 + ennemy.x, ennemy.y, 10, 10};
+        SDL_RenderFillRect(renderer, &rect2);
+        
         // update screen
         SDL_RenderPresent(renderer);
         time = SDL_GetTicks() - start;
