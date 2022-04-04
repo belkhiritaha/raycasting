@@ -13,9 +13,15 @@ TTF_Font *RobotoFont;
 
 SDL_Color Color = {255, 255, 255};
 
+SDL_Rect rect;
+SDL_Rect ground;
+SDL_Rect sky;
+
 // ennemy texture and surface
 SDL_Texture *EnnemyTexture = NULL;
 SDL_Surface *EnnemySurface = NULL;
+SDL_Surface *WallSurface = NULL;
+SDL_Texture *WallTexture = NULL;
 
 
 
@@ -29,14 +35,14 @@ void CreateWindow(){
 
     SDL_GetCurrentDisplayMode(0, &ScreenDimension);
 
-    window = SDL_CreateWindow("Explorateur 3000", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenDimension.w, ScreenDimension.h, SDL_WINDOW_INPUT_GRABBED);
+    window = SDL_CreateWindow("Explorateur 3000", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, ScreenDimension.w, ScreenDimension.h, SDL_WINDOW_INPUT_GRABBED | SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     if (window == NULL){
         printf("Couldn't create window");
         exit(EXIT_FAILURE);
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
 
     if (renderer == NULL){
         printf("Couldn't create renderer.");
@@ -56,6 +62,8 @@ void CreateWindow(){
 }
 
 void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
+    float vtexture;
+    float htexture;
     int r, mx, my, mp, dof;
     float rx, ry, xo, yo, distT;
     double ra = player->angle - DR * FOV_ANGLE/2;
@@ -82,16 +90,16 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra==pi){ // looking horizontal
             ry = player->y;
             rx = player->x;
-            dof = 8;
+            dof = MAPSIZE;
         }
-        while (dof < 8){
+        while (dof < MAPSIZE){
             mx = (int)rx>>6;
             my = (int)ry>>6;
-            if (mx>=0 && mx<MAPSIZE && my>=0 && my<MAPSIZE && map[my][mx]==1){
+            if (mx>=0 && mx<MAPSIZE && my>=0 && my<MAPSIZE && map[my][mx]==1){ 
                 hx = rx;
                 hy = ry;
                 disH = dist(player->x, player->y, hx, hy);
-                dof = 8;
+                dof = MAPSIZE;
             }
             else {
                 rx += xo;
@@ -120,16 +128,16 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra==pi || ra == 0){ // looking horizontal
             ry = player->y;
             rx = player->x;
-            dof = 8;
+            dof = MAPSIZE;
         }
-        while (dof < 8){
+        while (dof < MAPSIZE){
             mx = (int)rx>>6;
             my = (int)ry>>6;
             if (mx>=0 && mx<MAPSIZE && my>=0 && my<MAPSIZE && map[my][mx]==1){
                 vx = rx;
                 vy = ry;
                 disV = dist(player->x, player->y, vx, vy);
-                dof = 8;
+                dof = MAPSIZE;
             }
             else {
                 rx += xo;
@@ -148,11 +156,11 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
             distT = disV;
         }
         // draw line
-        ra+=DR/(NB_RAYS/FOV_ANGLE);
+        ra = ra + ANGLE_INC;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
-        //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        //SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
 
         // draw collumn
         float ca = player->angle - ra;
@@ -164,23 +172,43 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         float factor = getScalingFactor(player->x, player->y, rx, ry);
         // sdl draw rect with width 1 and height distT
         int width = screen_width/(NB_RAYS);
+
         // draw ground
         SDL_SetRenderDrawColor(renderer, 50, 55, 0, 255);
-        SDL_Rect ground = {r * width, drawincenter - (int)lineH, width, screen_height - drawincenter + (int)lineH};
+        ground.x = r * width;
+        ground.y = 0;
+        ground.w = width;
+        ground.h = screen_height;
         SDL_RenderFillRect(renderer, &ground);
-        SDL_Rect rect = {r * width, drawincenter - (int)lineH, width, (int)(screen_height * lineH/200)};
+                // draw sky
+        SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
+        sky.x = r * width;
+        sky.y = 0;
+        sky.w = width;
+        sky.h = drawincenter;
+        SDL_RenderFillRect(renderer, &sky);
+
+        rect.x = r * width;
+        rect.y = drawincenter - (int)lineH;
+        rect.w = width;
+        rect.h = (int)(screen_height * lineH/200) * screen_width/NB_RAYS;
         // draw rect
         if (disH < disV){
+            //SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
+            htexture = (int)(rx/2.0)%32;
             SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
         }
         else {
-            SDL_SetRenderDrawColor(renderer, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor), 255);
+            SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
+            htexture = (int)(ry/2.0)%32;
+            //SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
         }
+        //SDL_Rect dstrect = {htexture,0,1,32};
+        //SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
+
+
         SDL_RenderFillRect(renderer, &rect);
-        // draw sky
-        SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
-        SDL_Rect sky = {r * width, 0, width, drawincenter - (int)lineH};
-        SDL_RenderFillRect(renderer, &sky);
+
 
     }
 }
@@ -195,7 +223,6 @@ void drawCrosshair(Player_t * player, SDL_Renderer *renderer){
 
 // draw ennemy 
 void drawEnnemyonMap(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
-    // define vector of ennemy relative to player
     float ennemy_angle = atan2(ennemy->y - player->y, ennemy->x - player->x);
     float ennemy_dist = dist(ennemy->x, ennemy->y, player->x, player->y);
     if (ennemy_angle < 0) ennemy_angle += 2*pi;
@@ -239,14 +266,12 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
         float distance = dist(player->x, player->y, ennemy->x, ennemy->y);
         float ennemy_length = 2 * (MAPSIZE * 480) / distance;
         float draw_width = ennemy_width * screen_width / tot;
+        float draw_y =  drawincenter + ennemy->y - ennemy_dist * sin(ennemy_angle) - ennemy_length/2; if (draw_y > screen_width) draw_y = screen_width;
 
         //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width + 2 * sens * (screen_width * ennemy_dist_y)/base_triangle, drawincenter + ennemy->y - ennemy_dist * sin(ennemy_angle) - ennemy_length/2, draw_width, 2 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2 *ennemy_length};
         //SDL_RenderFillRect(renderer, &rect);
-        EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
         SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
-        SDL_DestroyTexture(EnnemyTexture);
-
     }
 }
 
@@ -293,7 +318,6 @@ void DrawScoreGlobal(){
 }
 
 void AffichageMenu(){
-    SDL_Rect rect;
     rect.w = Window_Width;
     rect.h = Window_Height/2;
     rect.x = 0; 
@@ -306,14 +330,12 @@ void AffichageMenu(){
 
 void AffichageNormal(){
     SDL_RenderClear(renderer);
-    
     drawRay(&player, map, renderer);
-    //drawMap(map, renderer);
+    drawMap(map, renderer);
     drawEnnemy(&ennemy, &player, renderer);
     drawCrosshair(&player, renderer);
     SDL_RenderPresent(renderer);
 }
-
 
 void *BoucleGestInput(void *arg){
     while(GameOption){
@@ -331,7 +353,10 @@ int BouclePrincipale(){
     CreateWindow();
 
     EnnemySurface = IMG_Load("character.png");
+    WallSurface = IMG_Load("../Res/texture1.png");
 
+    EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
+    WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
     unsigned int a = SDL_GetTicks();
     unsigned int b = SDL_GetTicks();
     double delta = 0;
@@ -350,7 +375,9 @@ int BouclePrincipale(){
     {
         a = SDL_GetTicks();
         delta = a - b;
-        if (delta > 1000/60.0){
+        if (delta > FPS_TO_GET){
+            printf("fps : %f\n", 1000/delta);
+            b = a;
             switch (GameOption)
             {
                 case GAMERUNNING:
@@ -372,5 +399,7 @@ int BouclePrincipale(){
         }
 
     }
+    SDL_DestroyTexture(WallTexture);
+    SDL_DestroyTexture(EnnemyTexture);
     return 0;
 }

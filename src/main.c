@@ -55,7 +55,7 @@ float dist(float x1, float y1, float x2, float y2){
 }
 
 float getScalingFactor(float x1, float y1, float x2, float y2){
-    return dist(x1, y1, x2, y2) / (8 * 64);
+    return dist(x1, y1, x2, y2) / ((MAPSIZE+2)  * 64);
 }
 
 int running;
