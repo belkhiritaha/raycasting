@@ -401,7 +401,7 @@ int BouclePrincipale(){
         else{
 
             // sleep the thread
-            usleep(10000 * (FPS_TO_GET - delta));
+            usleep(1000 * (FPS_TO_GET - delta));
         } 
 
     }
