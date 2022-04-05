@@ -13,24 +13,16 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     switch(event.key.keysym.sym){
                         case SDLK_z:
                             Keys[0] = 1;
-                            player.x += player.deltax;
-                            player.y += player.deltay;
                             continue;
                         case SDLK_d:
                             Keys[1] = 1;
-                            player.x -= sin(player.angle);
-                            player.y += cos(player.angle);
                             continue;
                         case SDLK_s:
                             Keys[2] = 1;
-                            player.x -= player.deltax;
-                            player.y -= player.deltay;
                             continue;
                         case SDLK_q:
                             Keys[3] = 1;
                             // move left
-                            player.x += sin(player.angle);
-                            player.y -= cos(player.angle);
                             continue;
                         default:
                             continue;
@@ -88,6 +80,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     continue;
             }
         }
+    gestMovement();
     SDL_Delay(5);
     return NULL;
 }

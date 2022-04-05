@@ -159,8 +159,8 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         ra = ra + ANGLE_INC;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
+        //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        //SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
 
         // draw collumn
         float ca = player->angle - ra;
@@ -194,20 +194,20 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         rect.h = (int)(screen_height * lineH/200) * screen_width/NB_RAYS;
         // draw rect
         if (disH < disV){
-            //SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
+            SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
             htexture = (int)(rx/2.0)%32;
-            SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
+            //SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
         }
         else {
-            SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
+            //SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
             htexture = (int)(ry/2.0)%32;
-            //SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
+            SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
         }
-        //SDL_Rect dstrect = {htexture,0,1,32};
-        //SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
+        SDL_Rect dstrect = {htexture,0,1,32};
+        SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
 
 
-        SDL_RenderFillRect(renderer, &rect);
+        //SDL_RenderFillRect(renderer, &rect);
 
 
     }
@@ -299,22 +299,17 @@ void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
 
 } 
 
-void DrawScoreGlobal(){
+void DrawFPS(float fps){
     char ScoreString[10];
-    //sprintf(ScoreString,"%d",ScoreGlobal);
+    sprintf(ScoreString,"%d",(int)fps);
     SDL_Surface* surfaceMessage = TTF_RenderText_Solid(RobotoFont, ScoreString, Color); 
     SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
     SDL_Rect Message_rect;
-    Message_rect.w = 50;
-    Message_rect.h = 50;
-    Message_rect.x = 100; 
-    Message_rect.y = Window_Height - Message_rect.h - 50;  
+    Message_rect.w = 100;
+    Message_rect.h = 100;
+    Message_rect.x = 0; 
+    Message_rect.y = 0;  
     SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-
-    Message_rect.x -= 80;
-    //blur_texture = SDL_CreateTextureFromSurface(renderer, Trophy);
-    //SDL_RenderCopy(renderer, blur_texture, NULL, &Message_rect);
-    //SDL_DestroyTexture(blur_texture);
 }
 
 void AffichageMenu(){
@@ -328,12 +323,15 @@ void AffichageMenu(){
     //SDL_DestroyTexture(blur_texture);
 }
 
-void AffichageNormal(){
+
+
+void AffichageNormal(float fps){
     SDL_RenderClear(renderer);
     drawRay(&player, map, renderer);
     drawMap(map, renderer);
     drawEnnemy(&ennemy, &player, renderer);
     drawCrosshair(&player, renderer);
+    DrawFPS(fps);
     SDL_RenderPresent(renderer);
 }
 
@@ -357,6 +355,7 @@ int BouclePrincipale(){
 
     EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
     WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
+    
     unsigned int a = SDL_GetTicks();
     unsigned int b = SDL_GetTicks();
     double delta = 0;
@@ -376,12 +375,12 @@ int BouclePrincipale(){
         a = SDL_GetTicks();
         delta = a - b;
         if (delta > FPS_TO_GET){
-            printf("fps : %f\n", 1000/delta);
+            //printf("fps : %f\n", 1000/delta);
             b = a;
             switch (GameOption)
             {
                 case GAMERUNNING:
-                    AffichageNormal();
+                    AffichageNormal(1000/delta);
                     break;
 
                 case MENU:
@@ -397,6 +396,11 @@ int BouclePrincipale(){
                     exit(EXIT_FAILURE);
             }
         }
+        else{
+
+            // sleep the thread
+            usleep(1000 * (FPS_TO_GET - delta));
+        } 
 
     }
     SDL_DestroyTexture(WallTexture);

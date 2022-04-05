@@ -5,7 +5,7 @@
 #include <SDL2/SDL_mouse.h>
 #include "main.h"
 //#include "entity.h"
-//#include "gameplay.h"
+#include "gameplay.h"
 
 #define NB_KEYS 10
 

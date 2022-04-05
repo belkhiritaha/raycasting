@@ -18,7 +18,7 @@
 #define pi3 3*pi/2
 #define DR 0.0174533
 #define MAPSIZE 10
-#define SENSI 0.02
+#define SENSI 0.1
 
 typedef struct Player {
     float x;
