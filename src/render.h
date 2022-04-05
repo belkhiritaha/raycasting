@@ -12,7 +12,7 @@
 
 #define FPS_TO_GET 1000/60.0
 
-#define NB_RAYS (screen_width/4)
+#define NB_RAYS (screen_width/1)
 #define FOV_ANGLE 60
 
 #define ANGLE_INC ((DR * FOV_ANGLE)/(NB_RAYS))
@@ -21,6 +21,7 @@ extern int Window_Height;
 extern int Window_Width;
 
 extern int DrawHitEffect;
+
 
 int BouclePrincipale();
 

@@ -53,7 +53,6 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     if (event.motion.yrel < 0){
                         drawincenter += 250 * SENSI;
                     }
-
                     continue;
 
                 case SDL_KEYUP:

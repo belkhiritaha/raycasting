@@ -62,9 +62,8 @@ void CreateWindow(){
 }
 
 void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
-    float vtexture;
     float htexture;
-    int r, mx, my, mp, dof;
+    int r, mx, my, dof;
     float rx, ry, xo, yo, distT;
     double ra = player->angle - DR * FOV_ANGLE/2;
     if (ra < 0) ra += 2*pi;
@@ -159,8 +158,8 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         ra = ra + ANGLE_INC;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
-        //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        //SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
 
         // draw collumn
         float ca = player->angle - ra;
@@ -172,21 +171,6 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         float factor = getScalingFactor(player->x, player->y, rx, ry);
         // sdl draw rect with width 1 and height distT
         int width = screen_width/(NB_RAYS);
-
-        // draw ground
-        SDL_SetRenderDrawColor(renderer, 50, 55, 0, 255);
-        ground.x = r * width;
-        ground.y = 0;
-        ground.w = width;
-        ground.h = screen_height;
-        SDL_RenderFillRect(renderer, &ground);
-                // draw sky
-        SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
-        sky.x = r * width;
-        sky.y = 0;
-        sky.w = width;
-        sky.h = drawincenter;
-        SDL_RenderFillRect(renderer, &sky);
 
         rect.x = r * width;
         rect.y = drawincenter - (int)lineH;
@@ -201,7 +185,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         else {
             //SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
             htexture = (int)(ry/2.0)%32;
-            SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
+            //SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
         }
         SDL_Rect dstrect = {htexture,0,1,32};
         SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
@@ -323,15 +307,33 @@ void AffichageMenu(){
     //SDL_DestroyTexture(blur_texture);
 }
 
+void drawSkyGround(){
+            // draw ground
+        SDL_SetRenderDrawColor(renderer, 50, 55, 0, 255);
+        ground.x = 0;
+        ground.y = 0;
+        ground.w = screen_width;
+        ground.h = screen_height;
+        SDL_RenderFillRect(renderer, &ground);
+                // draw sky
+        SDL_SetRenderDrawColor(renderer, 50, 55, 255, 255);
+        sky.x = 0;
+        sky.y = 0;
+        sky.w = screen_width;
+        sky.h = drawincenter;
+        SDL_RenderFillRect(renderer, &sky);
+}
+
 
 
 void AffichageNormal(float fps){
     SDL_RenderClear(renderer);
+    drawSkyGround();
     drawRay(&player, map, renderer);
-    drawMap(map, renderer);
     drawEnnemy(&ennemy, &player, renderer);
     drawCrosshair(&player, renderer);
     DrawFPS(fps);
+    drawMap(map, renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -399,7 +401,7 @@ int BouclePrincipale(){
         else{
 
             // sleep the thread
-            usleep(1000 * (FPS_TO_GET - delta));
+            usleep(10000 * (FPS_TO_GET - delta));
         } 
 
     }
