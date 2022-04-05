@@ -11,6 +11,7 @@
 
 #define GAMERUNNING 1
 #define MENU 0
+#define SETTINGS 2
 #define END_SCREEN 4
 
 #define pi 3.14159265358979323846
@@ -43,6 +44,8 @@ extern int drawincenter;
 
 extern int running;
 extern int GameOption;
+
+extern int QUALITY;
 
 extern Player_t player;
 extern Ennemy_t ennemy;

@@ -25,6 +25,7 @@ int screen_width = 1080;
 
 int drawincenter = 240;
 
+int QUALITY = LOW;
 
 
 
@@ -65,7 +66,7 @@ int main(){
     srand(time(NULL));
 
     running = 1;
-    GameOption = GAMERUNNING;
+    GameOption = MENU;
 
     player.x = 100;
     player.y = 100;

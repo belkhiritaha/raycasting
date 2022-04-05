@@ -12,6 +12,7 @@
 extern int Keys[NB_KEYS];
 
 void * gestInputOnTerrain(SDL_Renderer * renderer);
-void gestMenu();
+void * gestMenu();
+void * gestSettings();
 
 #endif

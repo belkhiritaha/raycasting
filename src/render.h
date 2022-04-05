@@ -12,7 +12,12 @@
 
 #define FPS_TO_GET 1000/60.0
 
-#define NB_RAYS (screen_width/5)
+#define ULTRA 1
+#define HIGH 2
+#define MEDIUM 4
+#define LOW 8
+
+#define NB_RAYS (screen_width/QUALITY)
 #define FOV_ANGLE 60
 
 #define ANGLE_INC ((DR * FOV_ANGLE)/(NB_RAYS))
@@ -26,5 +31,7 @@ extern int DrawHitEffect;
 int BouclePrincipale();
 
 void AffichageMap();
+
+void drawX();
 
 #endif /*_RENDER_HEADER_*/

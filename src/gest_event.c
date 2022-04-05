@@ -58,7 +58,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                 case SDL_KEYUP:
                     switch(event.key.keysym.sym){
                         case SDLK_ESCAPE:
-                            exit(0);
+                            GameOption = SETTINGS;
                             break;
                         case SDLK_z:
                             Keys[0] = 0;
@@ -72,6 +72,8 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                         case SDLK_q:
                             Keys[3] = 0;
                             continue;
+                        case SDLK_x:
+                            running = 0;
                         default:
                             continue;
                     }
@@ -84,7 +86,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
     return NULL;
 }
 
-void gestMenu(){
+void * gestMenu(){
     SDL_Event event;
     while (SDL_PollEvent(&event)){
             switch(event.type)
@@ -92,10 +94,6 @@ void gestMenu(){
                 case SDL_MOUSEBUTTONUP:
                     GameOption = GAMERUNNING;
                     continue;
-
-                default:
-                    break;
-
 
                 case SDL_WINDOWEVENT:
                     if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
@@ -105,7 +103,6 @@ void gestMenu(){
                     break;
 
                 case SDL_QUIT:
-                    printf("end game");
                     running = 0;
                     break;
                 
@@ -113,14 +110,94 @@ void gestMenu(){
                     switch (event.key.keysym.sym)
                     {
                     case SDLK_x:
-                        printf("end game");
                         running = 0;
                         continue;
                     
                     default:
                         continue;
                     }
+                    break;
+
+                default:
+                    continue;
             }
     }
-    SDL_Delay(1);
+    SDL_Delay(5);
+    return NULL;
+}
+
+int low_left_x = 0;
+
+int medium_left_x = 0;
+
+int high_left_x = 0;
+
+int ultra_left_x = 0;
+
+int button_y = 0;
+
+int button_width = 0;
+int button_height = 0;
+
+void * gestSettings(){
+    SDL_Event event;
+    while (SDL_PollEvent(&event)){
+            switch(event.type)
+            {   
+                default:
+                    break;
+                    
+                case SDL_MOUSEBUTTONUP:
+                    button_y = (screen_height * 260)/1080;
+
+                    low_left_x = (screen_width * 610)/1920;
+                    medium_left_x = (screen_width * 890)/1920;
+                    high_left_x = (screen_width * 1200)/1920;
+                    ultra_left_x = (screen_width * 1470)/1920;
+
+                    button_width = (screen_width * 80)/1920;
+                    button_height = (screen_width * 80)/1080;
+                    if (event.button.x > low_left_x && event.button.x < low_left_x + button_width && event.button.y > button_y && event.button.y < button_y + button_height){
+                        QUALITY = LOW;
+                    }
+                    else if (event.button.x > medium_left_x && event.button.x < medium_left_x + button_width && event.button.y > button_y && event.button.y < button_y + button_height){
+                        QUALITY = MEDIUM;
+                    }
+                    else if (event.button.x > high_left_x && event.button.x < high_left_x + button_width && event.button.y > button_y && event.button.y < button_y + button_height){
+                        QUALITY = HIGH;
+                    }
+                    else if (event.button.x > ultra_left_x && event.button.x < ultra_left_x + button_width && event.button.y > button_y && event.button.y < button_y + button_height){
+                        QUALITY = ULTRA;
+                    }
+                    continue;
+
+                case SDL_WINDOWEVENT:
+                    if(event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED){
+                        screen_height = event.window.data2;
+                        screen_width = event.window.data1;
+                    }
+                    break;
+
+                case SDL_QUIT:
+                    running = 0;
+                    break;
+                
+                case SDL_KEYUP:
+                    switch (event.key.keysym.sym)
+                    {
+                        case SDLK_x:
+                            running = 0;
+                            continue;
+                        
+                        case SDLK_ESCAPE:
+                            GameOption = GAMERUNNING;
+                            continue;
+
+                        default:
+                            continue;
+                    }
+            }
+    }
+    SDL_Delay(5);
+    return NULL;
 }

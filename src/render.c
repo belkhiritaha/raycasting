@@ -20,9 +20,18 @@ SDL_Rect sky;
 // ennemy texture and surface
 SDL_Texture *EnnemyTexture = NULL;
 SDL_Surface *EnnemySurface = NULL;
+
 SDL_Surface *WallSurface = NULL;
 SDL_Texture *WallTexture = NULL;
 
+SDL_Surface *GameName = NULL;
+SDL_Texture *GameNameTexture = NULL;
+
+SDL_Surface *SettingsSurface = NULL;
+SDL_Texture *SettingsTexture = NULL;
+
+SDL_Surface *XSurface = NULL;
+SDL_Texture *XTexture = NULL;
 
 
 void CreateWindow(){
@@ -297,14 +306,52 @@ void DrawFPS(float fps){
 }
 
 void AffichageMenu(){
-    rect.w = Window_Width;
-    rect.h = Window_Height/2;
-    rect.x = 0; 
-    rect.y = Window_Height/4;  
-    //blur_texture = SDL_CreateTextureFromSurface(renderer, GameName);
-    //SDL_RenderCopy(renderer, blur_texture , NULL, &rect);
+    SDL_RenderCopy(renderer, GameNameTexture , NULL, NULL);
     SDL_RenderPresent(renderer);
-    //SDL_DestroyTexture(blur_texture);
+}
+
+void drawX(){
+    int button_y = (screen_height * 260)/1080;
+    int button_width = (screen_width * 80)/1920;
+    int button_height = (screen_width * 40)/1080;
+    switch (QUALITY)
+    {
+        case LOW:
+            rect.x = (screen_width * 610)/1920;
+            rect.y = button_y;
+            rect.h = button_height;
+            rect.w = button_width;
+            break;
+        case MEDIUM:
+            rect.x = (screen_width * 890)/1920;
+            rect.y = button_y;
+            rect.h = button_height;
+            rect.w = button_width;
+            break;
+        
+        case HIGH:
+            rect.x = (screen_width * 1200)/1920;
+            rect.y = button_y;
+            rect.h = button_height;
+            rect.w = button_width;
+            break;
+        
+        case ULTRA:
+            rect.x = (screen_width * 1470)/1920;
+            rect.y = button_y;
+            rect.h = button_height;
+            rect.w = button_width;
+            break;
+    }
+    
+    SDL_RenderCopy(renderer, XTexture, NULL, &rect);
+    SDL_RenderPresent(renderer);
+}
+
+void AffichageSettings(){
+    SDL_RenderCopy(renderer, SettingsTexture , NULL, NULL);
+    drawX(0,0,0,0);
+    SDL_RenderPresent(renderer);
 }
 
 void drawSkyGround(){
@@ -338,10 +385,11 @@ void AffichageNormal(float fps){
 }
 
 void *BoucleGestInput(void *arg){
-    while(GameOption){
+    while(running){
       switch(GameOption){
           case GAMERUNNING : gestInputOnTerrain(renderer);break;
           case MENU : gestMenu();break;
+          case SETTINGS : gestSettings();break;
           case END_SCREEN : gestMenu();break;
           default:printf("game option fault");break;
       }
@@ -354,9 +402,21 @@ int BouclePrincipale(){
 
     EnnemySurface = IMG_Load("character.png");
     WallSurface = IMG_Load("../Res/texture1.png");
+    GameName = IMG_Load("../Res/GreenHoleMain.png");
+    SettingsSurface = IMG_Load("../Res/Menu.png");
+    XSurface = IMG_Load("../Res/X.png");
 
     EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
     WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
+    GameNameTexture = SDL_CreateTextureFromSurface(renderer, GameName);
+    SettingsTexture = SDL_CreateTextureFromSurface(renderer, SettingsSurface);
+    XTexture = SDL_CreateTextureFromSurface(renderer, XSurface);
+
+    SDL_FreeSurface(EnnemySurface);
+    SDL_FreeSurface(WallSurface);
+    SDL_FreeSurface(GameName);
+    SDL_FreeSurface(SettingsSurface);
+    SDL_FreeSurface(XSurface);
     
     unsigned int a = SDL_GetTicks();
     unsigned int b = SDL_GetTicks();
@@ -386,7 +446,11 @@ int BouclePrincipale(){
                     break;
 
                 case MENU:
-                    //AffichageMenu();
+                    AffichageMenu();
+                    break;
+
+                case SETTINGS:
+                    AffichageSettings();
                     break;
 
                 case END_SCREEN:
@@ -405,7 +469,10 @@ int BouclePrincipale(){
         } 
 
     }
+    SDL_DestroyTexture(GameNameTexture);
     SDL_DestroyTexture(WallTexture);
     SDL_DestroyTexture(EnnemyTexture);
+    SDL_DestroyTexture(SettingsTexture);
+    SDL_DestroyTexture(XTexture);
     return 0;
 }
