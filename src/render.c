@@ -101,16 +101,16 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra==pi){ // looking horizontal
             ry = player->y;
             rx = player->x;
-            dof = MAPSIZE;
+            dof = DOF;
         }
-        while (dof < MAPSIZE){
+        while (dof < DOF){
             mx = (int)rx>>6;
             my = (int)ry>>6;
             if (mx>=0 && mx<MAPSIZE && my>=0 && my<MAPSIZE && map[my][mx]==1){ 
                 hx = rx;
                 hy = ry;
                 disH = dist(player->x, player->y, hx, hy);
-                dof = MAPSIZE;
+                dof = DOF;
             }
             else {
                 rx += xo;
@@ -139,16 +139,16 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra==pi || ra == 0){ // looking horizontal
             ry = player->y;
             rx = player->x;
-            dof = MAPSIZE;
+            dof = DOF;
         }
-        while (dof < MAPSIZE){
+        while (dof < DOF){
             mx = (int)rx>>6;
             my = (int)ry>>6;
             if (mx>=0 && mx<MAPSIZE && my>=0 && my<MAPSIZE && map[my][mx]==1){
                 vx = rx;
                 vy = ry;
                 disV = dist(player->x, player->y, vx, vy);
-                dof = MAPSIZE;
+                dof = DOF;
             }
             else {
                 rx += xo;
@@ -175,7 +175,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ca < 0) ca += 2*pi;
         if (ca > 2*pi) ca -= 2*pi;
         distT = distT * cos(ca);
-        float lineH = (MAPSIZE * screen_width) / distT;
+        float lineH = (10 * screen_width) / distT;
         if (lineH > screen_width) lineH = screen_width;
         float factor = getScalingFactor(player->x, player->y, rx, ry);
 
@@ -184,23 +184,23 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         rect.x = r * width;
         rect.y = drawincenter - (int)lineH;
         rect.w = width;
-        rect.h = (int)(screen_height * lineH/200);
+        rect.h = (int)(2 * screen_height * lineH/200);
         // draw rect
         if (disH < disV){
             SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
-            htexture = (int)(rx/2.0)%32;
+            htexture = (int)(rx/2.0)%100;
             //SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
         }
         else {
             //SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
-            htexture = (int)(ry/2.0)%32;
-            //SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
+            htexture = (int)(ry/2.0)%100;
+            SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
         }
-        SDL_Rect dstrect = {htexture,0,1,32};
+        SDL_Rect dstrect = {htexture,0,1,100};
         SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
+        //SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        //SDL_RenderDrawLine(renderer, player->x, player->y, rx, ry);
 
 
         //SDL_RenderFillRect(renderer, &rect);
@@ -252,21 +252,17 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
         if (ennemy_angle < player->angle){
             sens = -1;
         }
-        float ennemy_length = 3 * (MAPSIZE * screen_height) / ennemy_dist_x;
-        float draw_width = 3 * ennemy_width * screen_width / tot;
-        float draw_y =  drawincenter;
+        float ennemy_length = 3 * (10 * screen_height) / ennemy_dist_x;
+        float draw_width = 5 * ennemy_width * screen_width / tot;
+        float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
         //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle - draw_width/2, draw_y, draw_width, 3 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle - draw_width/2, draw_y, draw_width, 2.5 * 3 *ennemy_length};
         //SDL_RenderFillRect(renderer, &rect);
         SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
 }
 
-void killEnnemy(Ennemy_t * ennemy, Player_t * player){
-    ennemy->x = -1;
-    ennemy->y = -1;
-}
 
 // function to draw the map
 void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
@@ -275,19 +271,19 @@ void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
     for(int i = 0; i < MAPSIZE; i++){
         for(int j = 0; j < MAPSIZE; j++){
             if (map[i][j] == 1){
-                SDL_Rect rect = {1066 + j*64, i*64, 64, 64};
+                SDL_Rect rect = {j*64, i*64, 64, 64};
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
     }
                     // draw player
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Rect rect = {1066 + player.x, player.y, 10, 10};
+    SDL_Rect rect = {player.x, player.y, 10, 10};
     SDL_RenderFillRect(renderer, &rect);
 
         // draw ennemy
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    SDL_Rect rect2 = {1066 + ennemy.x, ennemy.y, 10, 10};
+    SDL_Rect rect2 = {ennemy_head->x, ennemy_head->y, 10, 10};
     SDL_RenderFillRect(renderer, &rect2);
 
 } 
@@ -377,10 +373,10 @@ void AffichageNormal(float fps){
     SDL_RenderClear(renderer);
     drawSkyGround();
     drawRay(&player, map, renderer);
-    drawEnnemy(&ennemy, &player, renderer);
+    drawEnnemy(ennemy_head, &player, renderer);
     drawCrosshair(&player, renderer);
     DrawFPS(fps);
-    drawMap(map, renderer);
+    //drawMap(map, renderer);
     SDL_RenderPresent(renderer);
 }
 
@@ -400,8 +396,8 @@ void *BoucleGestInput(void *arg){
 int BouclePrincipale(){
     CreateWindow();
 
-    EnnemySurface = IMG_Load("character.png");
-    WallSurface = IMG_Load("../Res/texture1.png");
+    EnnemySurface = IMG_Load("../Res/character.png");
+    WallSurface = IMG_Load("../Res/texture2.png");
     GameName = IMG_Load("../Res/GreenHoleMain.png");
     SettingsSurface = IMG_Load("../Res/Menu.png");
     XSurface = IMG_Load("../Res/X.png");

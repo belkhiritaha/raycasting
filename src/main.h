@@ -18,7 +18,7 @@
 #define pi2 pi/2
 #define pi3 3*pi/2
 #define DR 0.0174533
-#define MAPSIZE 10
+#define MAPSIZE 50
 #define SENSI 0.1
 
 typedef struct Player {
@@ -48,7 +48,7 @@ extern int GameOption;
 extern int QUALITY;
 
 extern Player_t player;
-extern Ennemy_t ennemy;
+extern Ennemy_t * ennemy_head;
 
 extern int map[MAPSIZE][MAPSIZE];
 

@@ -3,7 +3,7 @@
 
 #include "gest_event.h"
 
-#define MV_SPEED 0.5
+#define MV_SPEED 1
 
 void gestMovement();
 

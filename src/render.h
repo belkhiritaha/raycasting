@@ -15,7 +15,9 @@
 #define ULTRA 1
 #define HIGH 2
 #define MEDIUM 4
-#define LOW 8
+#define LOW 6
+
+#define DOF MAPSIZE
 
 #define NB_RAYS (screen_width/QUALITY)
 #define FOV_ANGLE 60
