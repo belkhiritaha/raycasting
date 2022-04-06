@@ -28,6 +28,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                             continue;
                     }
                     continue;
+
                 // mouse movement
                 case SDL_MOUSEMOTION:
                     // if mouse moved to right

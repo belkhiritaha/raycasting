@@ -75,7 +75,7 @@ int main(){
     player.angle = pi/2;
 
     // declare ennemy
-    ennemy.x = 200;
+    ennemy.x = 300;
     ennemy.y = 200;
     ennemy.deltax = 0;
     ennemy.deltay = 0;

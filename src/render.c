@@ -33,6 +33,9 @@ SDL_Texture *SettingsTexture = NULL;
 SDL_Surface *XSurface = NULL;
 SDL_Texture *XTexture = NULL;
 
+SDL_Surface *CircleSurface = NULL;
+SDL_Texture *CircleTexture = NULL;
+
 
 void CreateWindow(){
     SDL_DisplayMode ScreenDimension;
@@ -163,28 +166,25 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
             ry = vy;
             distT = disV;
         }
-        // draw line
         ra = ra + ANGLE_INC;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
-        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
 
         // draw collumn
         float ca = player->angle - ra;
         if (ca < 0) ca += 2*pi;
         if (ca > 2*pi) ca -= 2*pi;
         distT = distT * cos(ca);
-        float lineH = (MAPSIZE * NB_RAYS) / distT;
+        float lineH = (MAPSIZE * screen_width) / distT;
         if (lineH > screen_width) lineH = screen_width;
         float factor = getScalingFactor(player->x, player->y, rx, ry);
-        // sdl draw rect with width 1 and height distT
-        int width = screen_width/(NB_RAYS);
+
+        int width = QUALITY;
 
         rect.x = r * width;
         rect.y = drawincenter - (int)lineH;
         rect.w = width;
-        rect.h = (int)(screen_height * lineH/200) * screen_width/NB_RAYS;
+        rect.h = (int)(screen_height * lineH/200);
         // draw rect
         if (disH < disV){
             SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
@@ -198,6 +198,9 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         }
         SDL_Rect dstrect = {htexture,0,1,32};
         SDL_RenderCopy(renderer, WallTexture, &dstrect, &rect);
+
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_RenderDrawLine(renderer, 1066 + player->x, player->y,1066+ rx, ry);
 
 
         //SDL_RenderFillRect(renderer, &rect);
@@ -235,37 +238,34 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
     if (ennemy_angle > 2*pi) ennemy_angle -= 2*pi;
     float ennemy_dist = dist(ennemy->x, ennemy->y, player->x, player->y);
     float ennemy_dist_x;
-    float ennemy_dist_y;
+    float ennemy_dist_y  = ennemy_dist * fabs(sin(ennemy_angle - player->angle));
+    int ennemy_width = 20;
     float tot;
-    int ennemy_width = 10;
     
-
     ennemy_dist_x = ennemy_dist * cos(ennemy_angle - player->angle);
-
-    if (ennemy_angle >= player->angle){
-        ennemy_dist_y = ennemy_dist * sin(ennemy_angle - player->angle);
-    }
-
-    else {
-        ennemy_dist_y = - ennemy_dist * sin(ennemy_angle - player->angle);
-        sens = -1;
-    }
 
     tot = sqrt(3) * ennemy_dist_x;
     
     float base_triangle = 2 * ennemy_dist_x / sqrt(3);
 
-    if (ennemy_angle >= player->angle - 30 * DR && ennemy_angle <= player->angle + 30 * DR){
-        float distance = dist(player->x, player->y, ennemy->x, ennemy->y);
-        float ennemy_length = 2 * (MAPSIZE * 480) / distance;
-        float draw_width = ennemy_width * screen_width / tot;
-        float draw_y =  drawincenter + ennemy->y - ennemy_dist * sin(ennemy_angle) - ennemy_length/2; if (draw_y > screen_width) draw_y = screen_width;
+    if (ennemy_angle >= player->angle - FOV_ANGLE/2 * DR && ennemy_angle <= player->angle + FOV_ANGLE/2 * DR){
+        if (ennemy_angle < player->angle){
+            sens = -1;
+        }
+        float ennemy_length = 3 * (MAPSIZE * screen_height) / ennemy_dist_x;
+        float draw_width = 3 * ennemy_width * screen_width / tot;
+        float draw_y =  drawincenter;
 
         //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle - draw_width/2, draw_y, draw_width, 3 *ennemy_length};
         //SDL_RenderFillRect(renderer, &rect);
         SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
+}
+
+void killEnnemy(Ennemy_t * ennemy, Player_t * player){
+    ennemy->x = -1;
+    ennemy->y = -1;
 }
 
 // function to draw the map
@@ -405,18 +405,21 @@ int BouclePrincipale(){
     GameName = IMG_Load("../Res/GreenHoleMain.png");
     SettingsSurface = IMG_Load("../Res/Menu.png");
     XSurface = IMG_Load("../Res/X.png");
+    CircleSurface = IMG_Load("../Res/shadow.png");
 
     EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
     WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
     GameNameTexture = SDL_CreateTextureFromSurface(renderer, GameName);
     SettingsTexture = SDL_CreateTextureFromSurface(renderer, SettingsSurface);
     XTexture = SDL_CreateTextureFromSurface(renderer, XSurface);
+    CircleTexture = SDL_CreateTextureFromSurface(renderer, CircleSurface);
 
     SDL_FreeSurface(EnnemySurface);
     SDL_FreeSurface(WallSurface);
     SDL_FreeSurface(GameName);
     SDL_FreeSurface(SettingsSurface);
     SDL_FreeSurface(XSurface);
+    SDL_FreeSurface(CircleSurface);
     
     unsigned int a = SDL_GetTicks();
     unsigned int b = SDL_GetTicks();
@@ -474,5 +477,6 @@ int BouclePrincipale(){
     SDL_DestroyTexture(EnnemyTexture);
     SDL_DestroyTexture(SettingsTexture);
     SDL_DestroyTexture(XTexture);
+    SDL_DestroyTexture(CircleTexture);
     return 0;
 }
