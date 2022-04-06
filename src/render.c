@@ -89,13 +89,13 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra>pi){ // looking up
             ry = (((int)player->y>>6)<<6) - 0.0001;
             rx = (player->y - ry) * aTan + player->x;
-            yo = -64;
+            yo = -BLOCK_SIZE;
             xo = -yo*aTan;
         }
         if (ra<pi){ // looking down
-            ry = (((int)player->y>>6)<<6) + 64;
+            ry = (((int)player->y>>6)<<6) + BLOCK_SIZE;
             rx = (player->y - ry) * aTan + player->x;
-            yo = 64;
+            yo = BLOCK_SIZE;
             xo = -yo*aTan;
         }
         if (ra==pi){ // looking horizontal
@@ -127,13 +127,13 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ra>pi2 && ra < pi3){ // looking left
             rx = (((int)player->x>>6)<<6) - 0.0001;
             ry = (player->x - rx) * nTan + player->y;
-            xo = -64;
+            xo = -BLOCK_SIZE;
             yo = -xo*nTan;
         }
         if (ra<pi2 || ra>pi3){ // looking right
-            rx = (((int)player->x>>6)<<6) + 64;
+            rx = (((int)player->x>>6)<<6) + BLOCK_SIZE;
             ry = (player->x - rx) * nTan + player->y;
-            xo = 64;
+            xo = BLOCK_SIZE;
             yo = -xo*nTan;
         }
         if (ra==pi || ra == 0){ // looking horizontal
@@ -188,12 +188,12 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         // draw rect
         if (disH < disV){
             SDL_SetTextureColorMod(WallTexture, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor));
-            htexture = (int)(rx/2.0)%100;
+            htexture = (int)(rx)%BLOCK_SIZE;
             //SDL_SetRenderDrawColor(renderer, 255 * (1 - factor), 255 * (1 - factor), 255 * (1 - factor) , 255);
         }
         else {
             //SDL_SetRenderDrawColor(renderer, 155 * (1 - factor), 155 * (1 - factor), 155 * (1 - factor) , 255);
-            htexture = (int)(ry/2.0)%100;
+            htexture = (int)(ry)%BLOCK_SIZE;
             SDL_SetTextureColorMod(WallTexture, 150 * (1 - factor), 150 * (1 - factor), 150 * (1 - factor));
         }
         SDL_Rect dstrect = {htexture,0,1,100};
@@ -271,7 +271,7 @@ void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
     for(int i = 0; i < MAPSIZE; i++){
         for(int j = 0; j < MAPSIZE; j++){
             if (map[i][j] == 1){
-                SDL_Rect rect = {j*64, i*64, 64, 64};
+                SDL_Rect rect = {j*BLOCK_SIZE/MAPSIZE, i*BLOCK_SIZE/MAPSIZE, BLOCK_SIZE/MAPSIZE, BLOCK_SIZE/MAPSIZE};
                 SDL_RenderFillRect(renderer, &rect);
             }
         }

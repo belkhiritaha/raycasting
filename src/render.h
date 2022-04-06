@@ -17,7 +17,8 @@
 #define MEDIUM 4
 #define LOW 6
 
-#define DOF MAPSIZE
+#define DOF (MAPSIZE * 1.5)
+#define BLOCK_SIZE 64
 
 #define NB_RAYS (screen_width/QUALITY)
 #define FOV_ANGLE 60

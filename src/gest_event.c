@@ -29,6 +29,9 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     }
                     continue;
 
+                case SDL_MOUSEBUTTONUP:
+                    printf("player position: %f, %f\n", player.x/BLOCK_SIZE, player.y/BLOCK_SIZE);
+
                 // mouse movement
                 case SDL_MOUSEMOTION:
                     // if mouse moved to right

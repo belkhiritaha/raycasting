@@ -60,6 +60,37 @@ int map[50][50] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
 };
 
+// write map to map.txt
+void writeMap(int map[][MAPSIZE])
+{
+    FILE *fp;
+    fp = fopen("map.txt", "w");
+    for(int i = 0; i < MAPSIZE; i++)
+    {
+        for(int j = 0; j < MAPSIZE; j++)
+        {
+            fprintf(fp, "%d ", map[i][j]);
+        }
+        fprintf(fp, "\n");
+    }
+    fclose(fp);
+}
+
+// read map from map.txt
+void readMap(int map[][MAPSIZE])
+{
+    FILE *fp;
+    fp = fopen("map.txt", "r");
+    for(int i = 0; i < MAPSIZE; i++)
+    {
+        for(int j = 0; j < MAPSIZE; j++)
+        {
+            fscanf(fp, "%d", &map[i][j]);
+        }
+    }
+    fclose(fp);
+}
+
 int screen_height = 1920;
 int screen_width = 1080;
 
@@ -96,7 +127,11 @@ float dist(float x1, float y1, float x2, float y2){
 }
 
 float getScalingFactor(float x1, float y1, float x2, float y2){
-    return dist(x1, y1, x2, y2) / ((MAPSIZE+2)  * 64);
+    float dista = dist(x1, y1, x2, y2);
+    if (dista > BLOCK_SIZE * MAPSIZE/1.2){
+        return 1;
+    }
+    return dist(x1, y1, x2, y2) / (MAPSIZE * 1.2  * BLOCK_SIZE);
 }
 
 int running;
@@ -126,6 +161,11 @@ int main(){
     // declare ennemy
     ennemy_head = (Ennemy_t *) malloc(sizeof(Ennemy_t));
     initEnnemy(ennemy_head);
+
+    //writeMap(map);
+
+    // read map
+    readMap(map);
 
     BouclePrincipale();
 }
