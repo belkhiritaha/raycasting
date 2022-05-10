@@ -127,11 +127,7 @@ float dist(float x1, float y1, float x2, float y2){
 }
 
 float getScalingFactor(float x1, float y1, float x2, float y2){
-    float dista = dist(x1, y1, x2, y2);
-    if (dista > BLOCK_SIZE * MAPSIZE/1.2){
-        return 1;
-    }
-    return dist(x1, y1, x2, y2) / (MAPSIZE * 1.2  * BLOCK_SIZE);
+    return dist(x1, y1, x2, y2) / (MAPSIZE * sqrt(2)  * BLOCK_SIZE);
 }
 
 int running;

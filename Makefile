@@ -4,13 +4,14 @@ LDFLAG=$(shell sdl2-config --cflags --libs) -lm -lSDL2_ttf -D_REENTRANT -lSDL2_i
 CFLAG=-Wall $(shell sdl2-config --cflags --libs)
 
 EXEC=run
-SRC=$(wildcard *.c)
+SRC=$(wildcard src/*.c)
 OBJ=$(SRC:.c=.o)
 
 all:$(EXEC)
 
 $(EXEC):$(OBJ)
 	$(CC) -o $@ $^ $(LDFLAG)
+	mv $^ bin/
 
 %.o:%.c
 	$(CC) -o $@ -c $< $(CFLAG)
@@ -18,7 +19,7 @@ $(EXEC):$(OBJ)
 .PHONY:clean 
 
 clean:
-	rm -rf *.o
+	rm -rf bin/*.o
 	rm -rf $(EXEC)
 
 

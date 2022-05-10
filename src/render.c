@@ -68,7 +68,7 @@ void CreateWindow(){
     }
 
 
-    RobotoFont = TTF_OpenFont("Roboto-Black.ttf", 50);
+    RobotoFont = TTF_OpenFont("Res/Roboto-Black.ttf", 50);
 
     SDL_GetWindowSize(window, &screen_width, &screen_height);
 }
@@ -372,8 +372,8 @@ void drawSkyGround(){
 void AffichageNormal(float fps){
     SDL_RenderClear(renderer);
     drawSkyGround();
-    drawRay(&player, map, renderer);
     drawEnnemy(ennemy_head, &player, renderer);
+    drawRay(&player, map, renderer);
     drawCrosshair(&player, renderer);
     DrawFPS(fps);
     //drawMap(map, renderer);
@@ -396,12 +396,12 @@ void *BoucleGestInput(void *arg){
 int BouclePrincipale(){
     CreateWindow();
 
-    EnnemySurface = IMG_Load("../Res/character.png");
-    WallSurface = IMG_Load("../Res/texture2.png");
-    GameName = IMG_Load("../Res/GreenHoleMain.png");
-    SettingsSurface = IMG_Load("../Res/Menu.png");
-    XSurface = IMG_Load("../Res/X.png");
-    CircleSurface = IMG_Load("../Res/shadow.png");
+    EnnemySurface = IMG_Load("Res/character.png");
+    WallSurface = IMG_Load("Res/texture2.png");
+    GameName = IMG_Load("Res/GreenHoleMain.png");
+    SettingsSurface = IMG_Load("Res/Menu.png");
+    XSurface = IMG_Load("Res/X.png");
+    CircleSurface = IMG_Load("Res/shadow.png");
 
     EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
     WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
