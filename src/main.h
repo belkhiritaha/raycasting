@@ -56,4 +56,6 @@ float dist(float x1, float y1, float x2, float y2);
 
 float getScalingFactor(float x1, float y1, float x2, float y2);
 
+void printMap(int map[MAPSIZE][MAPSIZE]);
+
 #endif

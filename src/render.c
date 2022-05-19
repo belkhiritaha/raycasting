@@ -76,7 +76,7 @@ void CreateWindow(){
 void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
     float htexture;
     int r, mx, my, dof;
-    float rx, ry, xo, yo, distT;
+    double rx, ry, xo, yo, distT;
     double ra = player->angle - DR * FOV_ANGLE/2;
     if (ra < 0) ra += 2*pi;
     if (ra > 2*pi) ra -= 2*pi;
