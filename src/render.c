@@ -267,7 +267,7 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
         //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.2 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.5 * ennemy_dist_y)/base_triangle - ennemy_width/2, draw_y, draw_width, 2.5 * 3 *ennemy_length};
         //SDL_RenderFillRect(renderer, &rect);
         SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
@@ -300,7 +300,7 @@ void drawBullet2(Bullet_t * b, Player_t * player, SDL_Renderer *renderer){
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.2 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.5 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
         SDL_RenderFillRect(renderer, &rect);
         //SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }

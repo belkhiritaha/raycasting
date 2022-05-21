@@ -11,4 +11,7 @@ void gestMovement();
 void Shoot();
 void gestAll();
 void printBulletList();
+void initEnnemy();
+void SpawnEnnemies(int n);
+
 #endif

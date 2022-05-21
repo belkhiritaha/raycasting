@@ -38,14 +38,14 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                 case SDL_MOUSEMOTION:
                     // if mouse moved to right
                     if (event.motion.xrel > 0){
-                        player.angle += 0.2 * SENSI;
+                        player.angle += 0.1 * SENSI;
                         if (player.angle > 2*pi) player.angle -= 2*pi;
                         player.deltax = cos(player.angle);
                         player.deltay = sin(player.angle);
                     }
                     // if mouse move to left
                     if (event.motion.xrel < 0){
-                        player.angle -= 0.2 * SENSI;
+                        player.angle -= 0.1 * SENSI;
                         if (player.angle < 0) {player.angle += 2*pi;}
                         player.deltax = cos(player.angle);
                         player.deltay = sin(player.angle);

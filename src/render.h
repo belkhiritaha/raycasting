@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "main.h"
 #include "gest_event.h"
+#include "map.h"
 
 #define FPS_TO_GET 1000/60.0
 

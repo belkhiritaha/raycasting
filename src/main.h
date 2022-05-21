@@ -18,7 +18,6 @@
 #define pi2 pi/2
 #define pi3 3*pi/2
 #define DR 0.0174533
-#define MAPSIZE 50
 #define SENSI 0.1
 
 typedef struct Bullet {
@@ -34,7 +33,7 @@ typedef struct Bullet {
 typedef struct Player {
     float x;
     float y;
-    float angle;
+    double angle;
     float deltax;
     float deltay;
     int shoot_timer;
@@ -64,12 +63,10 @@ extern int QUALITY;
 extern Player_t player;
 extern Ennemy_t * ennemy_head;
 
-extern int map[MAPSIZE][MAPSIZE];
 
 float dist(float x1, float y1, float x2, float y2);
 
 float getScalingFactor(float x1, float y1, float x2, float y2);
 
-void printMap(int map[MAPSIZE][MAPSIZE]);
 
 #endif

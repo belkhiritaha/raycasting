@@ -13,7 +13,23 @@ void gestMovement(){
     }
 }
 
+void initEnnemy(Ennemy_t * ennemy){
+    ennemy->x = rand()% MAPSIZE * BLOCK_SIZE;
+    ennemy->y = rand()% MAPSIZE * BLOCK_SIZE;
+    ennemy->angle = 0;
+    ennemy->deltax = 0;
+    ennemy->deltay = 0;
+    ennemy->hp = 5;
+}
 
+void SpawnEnnemies(int n){
+    for (int i = 0; i < n; i++){
+        Ennemy_t * new_ennemy = (Ennemy_t *) malloc(sizeof(Ennemy_t));
+        initEnnemy(new_ennemy);
+        new_ennemy->next = ennemy_head;
+        ennemy_head = new_ennemy;
+    }
+}
 
 
 void Shoot(){
@@ -59,7 +75,7 @@ void checkHitEnnemy(Ennemy_t * ennemy_head){
     while (tmp != NULL){
         Bullet_t * tmp_bullet = player.bullet_list;
         while (tmp_bullet != NULL){
-            if (fabs(tmp->x - tmp_bullet->x) < BLOCK_SIZE && fabs(tmp->y - tmp_bullet->y) < BLOCK_SIZE/2){
+            if (fabs(tmp->x - tmp_bullet->x) < BLOCK_SIZE * 2 && fabs(tmp->y - tmp_bullet->y) < BLOCK_SIZE/2){
                 tmp_bullet->speed = 0;
                 tmp_bullet->x = 0;
                 tmp_bullet->y = 0;
