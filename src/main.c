@@ -95,6 +95,7 @@ void initEnnemy(Ennemy_t * ennemy){
     ennemy->angle = 0;
     ennemy->deltax = 0;
     ennemy->deltay = 0;
+    ennemy->hp = 5;
 }
 
 int main(){

@@ -30,10 +30,10 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     continue;
 
                 case SDL_MOUSEBUTTONUP:
-                    printf("player position: %f, %f\n", player.x/BLOCK_SIZE, player.y/BLOCK_SIZE);
-                    printf("%d", map[(int)player.x/BLOCK_SIZE][(int) player.y/BLOCK_SIZE]);
-                    printMap(map);
-
+                    if (event.button.button == SDL_BUTTON_LEFT){
+                        Shoot();
+                    }
+                    continue;
                 // mouse movement
                 case SDL_MOUSEMOTION:
                     // if mouse moved to right
@@ -87,7 +87,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     continue;
             }
         }
-    gestMovement();
+    gestAll();
     SDL_Delay(5);
     return NULL;
 }

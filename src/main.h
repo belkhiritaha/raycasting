@@ -21,20 +21,34 @@
 #define MAPSIZE 50
 #define SENSI 0.1
 
+typedef struct Bullet {
+    float x;
+    float y;
+    float angle;
+    float deltax;
+    float deltay;
+    float speed;
+    struct Bullet * next;
+} Bullet_t;
+
 typedef struct Player {
     float x;
     float y;
     float angle;
     float deltax;
     float deltay;
+    int shoot_timer;
+    struct Bullet * bullet_list;
 } Player_t;
 
 typedef struct Ennemy {
     float x;
     float y;
+    int hp;
     float angle;
     float deltax;
     float deltay;
+    struct Ennemy * next;
 } Ennemy_t;
 
 extern int screen_height;

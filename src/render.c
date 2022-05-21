@@ -77,7 +77,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
     float htexture;
     int r, mx, my, dof;
     double rx, ry, xo, yo, distT;
-    double ra = player->angle - DR * FOV_ANGLE/2;
+    double ra = player->angle - DR * FOV_ANGLE/4;
     if (ra < 0) ra += 2*pi;
     if (ra > 2*pi) ra -= 2*pi;
     for (r = 0; r<NB_RAYS; r++){
@@ -166,7 +166,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
             ry = vy;
             distT = disV;
         }
-        ra = ra + ANGLE_INC;
+        ra = ra + ANGLE_INC/2;
         if (ra < 0) ra += 2*pi;
         if (ra > 2*pi) ra -= 2*pi;
 
@@ -175,8 +175,7 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
         if (ca < 0) ca += 2*pi;
         if (ca > 2*pi) ca -= 2*pi;
         distT = distT * cos(ca);
-        float lineH = (10 * screen_width) / distT;
-        if (lineH > screen_width) lineH = screen_width;
+        float lineH = (15 * screen_height) / distT;
         float factor = getScalingFactor(player->x, player->y, rx, ry);
 
         int width = QUALITY;
@@ -208,6 +207,17 @@ void drawRay(Player_t * player, int map[MAPSIZE][MAPSIZE], SDL_Renderer *rendere
 
     }
 }
+
+void drawBullet(Bullet_t * bullet, SDL_Renderer *renderer){
+    Bullet_t * b = bullet;
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    while (b != NULL){
+        SDL_Rect rect = {b->x, b->y, 1, 1};
+        SDL_RenderFillRect(renderer, &rect);
+        b = b->next;
+    }
+}
+
 
 // draw crosshair
 void drawCrosshair(Player_t * player, SDL_Renderer *renderer){
@@ -257,12 +267,44 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
         //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * ennemy_dist_y)/base_triangle - draw_width/2, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.2 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
         //SDL_RenderFillRect(renderer, &rect);
         SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
 }
 
+
+void drawBullet2(Bullet_t * b, Player_t * player, SDL_Renderer *renderer){
+    int sens = 1;
+    float ennemy_angle = atan2(b->y - player->y, b->x - player->x);
+    if (ennemy_angle < 0) ennemy_angle += 2*pi;
+    if (ennemy_angle > 2*pi) ennemy_angle -= 2*pi;
+    float ennemy_dist = dist(b->x, b->y, player->x, player->y);
+    float ennemy_dist_x;
+    float ennemy_dist_y  = ennemy_dist * fabs(sin(ennemy_angle - player->angle));
+    int ennemy_width = 20;
+    float tot;
+    
+    ennemy_dist_x = ennemy_dist * cos(ennemy_angle - player->angle);
+
+    tot = sqrt(3) * ennemy_dist_x;
+    
+    float base_triangle = 2 * ennemy_dist_x / sqrt(3);
+
+    if (ennemy_angle >= player->angle - FOV_ANGLE/2 * DR && ennemy_angle <= player->angle + FOV_ANGLE/2 * DR){
+        if (ennemy_angle < player->angle){
+            sens = -1;
+        }
+        float ennemy_length = 3 * (10 * screen_height) / ennemy_dist_x;
+        float draw_width = ennemy_width * screen_width / tot;
+        float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
+
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 1.2 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_RenderFillRect(renderer, &rect);
+        //SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
+    }
+}
 
 // function to draw the map
 void drawMap(int map[MAPSIZE][MAPSIZE], SDL_Renderer *renderer){
@@ -370,12 +412,27 @@ void drawSkyGround(){
 
 
 void AffichageNormal(float fps){
+    Bullet_t *b = player.bullet_list;
+    Ennemy_t *e = ennemy_head;
     SDL_RenderClear(renderer);
+
     drawSkyGround();
-    drawEnnemy(ennemy_head, &player, renderer);
+    
+    while (e != NULL){
+        drawEnnemy(e, &player, renderer);
+        e = e->next;
+    }
+
+
     drawRay(&player, map, renderer);
     drawCrosshair(&player, renderer);
     DrawFPS(fps);
+
+    while (b != NULL){
+        drawBullet2(b, &player, renderer);
+        b = b->next;
+    }
+
     //drawMap(map, renderer);
     SDL_RenderPresent(renderer);
 }
