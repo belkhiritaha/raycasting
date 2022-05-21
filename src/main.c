@@ -2,10 +2,10 @@
 #include "main.h"
 
 
-int screen_height = 1920;
-int screen_width = 1080;
+int screen_width = 1920;
+int screen_height = 1080;
 
-int drawincenter = 240;
+int drawincenter = 1080/2 - 100;
 
 int QUALITY = ULTRA;
 

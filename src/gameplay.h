@@ -39,7 +39,7 @@ extern Ennemy_t * ennemy_head;
 
 
 #define MV_SPEED (1)
-#define BULLET_SPEED (100)
+#define BULLET_SPEED (200)
 #define SHOOT_DELAY (10)
 
 void gestMovement();

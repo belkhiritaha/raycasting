@@ -53,11 +53,11 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
 
                     // if mouse moved to up
                     if (event.motion.yrel > 0){
-                        drawincenter -= 250 * SENSI;
+                        //drawincenter -= 250 * SENSI;
                     }
                     // if mouse moved to down
                     if (event.motion.yrel < 0){
-                        drawincenter += 250 * SENSI;
+                        //drawincenter += 250 * SENSI;
                     }
                     continue;
 

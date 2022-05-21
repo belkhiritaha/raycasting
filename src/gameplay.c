@@ -3,6 +3,10 @@
 Player_t player;
 Ennemy_t * ennemy_head;
 
+getDistance(float x1, float y1, float x2, float y2){
+    return sqrt(pow(x1-x2, 2) + pow(y1-y2, 2));
+}
+
 void gestMovement(){
     float x_increment = (Keys[0] - Keys[2]) * player.deltax + (Keys [3] - Keys[1]) * sin(player.angle);
     float y_increment = (Keys[0] - Keys[2]) * player.deltay + (Keys[1] - Keys[3]) * cos(player.angle);
@@ -114,7 +118,7 @@ void checkHitEnnemy(Ennemy_t * ennemy_head){
     while (tmp != NULL){
         Bullet_t * tmp_bullet = player.bullet_list;
         while (tmp_bullet != NULL){
-            if (fabs(tmp->x - tmp_bullet->x) < BLOCK_SIZE * 2 && fabs(tmp->y - tmp_bullet->y) < BLOCK_SIZE/4){
+            if (getDistance(tmp->x, tmp->y, tmp_bullet->x, tmp_bullet->y) < BLOCK_SIZE){
                 tmp->hp--;
                 if (tmp->hp == 0){
                     tmp2 = tmp->next;
