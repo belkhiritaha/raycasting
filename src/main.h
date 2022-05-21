@@ -20,36 +20,6 @@
 #define DR 0.0174533
 #define SENSI 0.1
 
-typedef struct Bullet {
-    float x;
-    float y;
-    float angle;
-    float deltax;
-    float deltay;
-    float speed;
-    struct Bullet * next;
-} Bullet_t;
-
-typedef struct Player {
-    float x;
-    float y;
-    double angle;
-    float deltax;
-    float deltay;
-    int shoot_timer;
-    struct Bullet * bullet_list;
-} Player_t;
-
-typedef struct Ennemy {
-    float x;
-    float y;
-    int hp;
-    float angle;
-    float deltax;
-    float deltay;
-    struct Ennemy * next;
-} Ennemy_t;
-
 extern int screen_height;
 extern int screen_width;
 
@@ -60,8 +30,7 @@ extern int GameOption;
 
 extern int QUALITY;
 
-extern Player_t player;
-extern Ennemy_t * ennemy_head;
+
 
 
 float dist(float x1, float y1, float x2, float y2);

@@ -2,9 +2,6 @@
 #include "main.h"
 
 
-Player_t player;
-Ennemy_t * ennemy_head;
-
 int screen_height = 1920;
 int screen_width = 1080;
 
@@ -30,7 +27,7 @@ int main(){
     running = 1;
     GameOption = MENU;
 
-
+    SDL_ShowCursor(SDL_DISABLE);
     player.x = 700;
     player.y = 500;
     player.deltax = 0;

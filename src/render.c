@@ -36,6 +36,9 @@ SDL_Texture *XTexture = NULL;
 SDL_Surface *CircleSurface = NULL;
 SDL_Texture *CircleTexture = NULL;
 
+SDL_Surface *POVSurface = NULL;
+SDL_Texture *POVTexture = NULL;
+
 
 void CreateWindow(){
     SDL_DisplayMode ScreenDimension;
@@ -266,10 +269,10 @@ void drawEnnemy(Ennemy_t * ennemy, Player_t * player, SDL_Renderer *renderer){
         float draw_width = 5 * ennemy_width * screen_width / tot;
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
-        //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 2 * ennemy_dist_y)/base_triangle - ennemy_width/2, draw_y, draw_width, 2.5 * 3 *ennemy_length};
-        //SDL_RenderFillRect(renderer, &rect);
-        SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 2 * ennemy_dist_y)/base_triangle - draw_width/2, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_RenderFillRect(renderer, &rect);
+        //SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
 }
 
@@ -295,12 +298,16 @@ void drawBullet2(Bullet_t * b, Player_t * player, SDL_Renderer *renderer){
         if (ennemy_angle < player->angle){
             sens = -1;
         }
-        float ennemy_length = 3 * (10 * screen_height) / ennemy_dist_x;
+        float ennemy_length = 9 * (10 * screen_height) / ennemy_dist_x;
         float draw_width = ennemy_width * screen_width / tot;
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
+        if (ennemy_length < 10) {
+            DeleteBullet(b);
+        }
+
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 2 * ennemy_dist_y)/base_triangle, draw_y, draw_width, 2.5 * 3 *ennemy_length};
+        SDL_Rect rect = {screen_width/2 + sens * (screen_width * 2 * ennemy_dist_y)/base_triangle, draw_y, 5 * draw_width, ennemy_length};
         SDL_RenderFillRect(renderer, &rect);
         //SDL_RenderCopy(renderer, EnnemyTexture, NULL, &rect);
     }
@@ -409,7 +416,10 @@ void drawSkyGround(){
         SDL_RenderFillRect(renderer, &sky);
 }
 
-
+void drawPOVHands(){
+    SDL_Rect rect = {0, 0, screen_width, screen_height};
+    SDL_RenderCopy(renderer, POVTexture, NULL, &rect);
+}
 
 void AffichageNormal(float fps){
     Bullet_t *b = player.bullet_list;
@@ -434,6 +444,7 @@ void AffichageNormal(float fps){
     }
 
     //drawMap(map, renderer);
+    drawPOVHands();
     SDL_RenderPresent(renderer);
 }
 
@@ -459,6 +470,7 @@ int BouclePrincipale(){
     SettingsSurface = IMG_Load("Res/Menu.png");
     XSurface = IMG_Load("Res/X.png");
     CircleSurface = IMG_Load("Res/shadow.png");
+    POVSurface = IMG_Load("Res/hands.png");
 
     EnnemyTexture = SDL_CreateTextureFromSurface(renderer, EnnemySurface);
     WallTexture = SDL_CreateTextureFromSurface(renderer, WallSurface);
@@ -466,6 +478,7 @@ int BouclePrincipale(){
     SettingsTexture = SDL_CreateTextureFromSurface(renderer, SettingsSurface);
     XTexture = SDL_CreateTextureFromSurface(renderer, XSurface);
     CircleTexture = SDL_CreateTextureFromSurface(renderer, CircleSurface);
+    POVTexture = SDL_CreateTextureFromSurface(renderer, POVSurface);
 
     SDL_FreeSurface(EnnemySurface);
     SDL_FreeSurface(WallSurface);
@@ -473,6 +486,7 @@ int BouclePrincipale(){
     SDL_FreeSurface(SettingsSurface);
     SDL_FreeSurface(XSurface);
     SDL_FreeSurface(CircleSurface);
+    SDL_FreeSurface(POVSurface);
     
     unsigned int a = SDL_GetTicks();
     unsigned int b = SDL_GetTicks();

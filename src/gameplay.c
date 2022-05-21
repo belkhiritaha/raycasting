@@ -1,5 +1,8 @@
 #include "gameplay.h"
 
+Player_t player;
+Ennemy_t * ennemy_head;
+
 void gestMovement(){
     float x_increment = (Keys[0] - Keys[2]) * player.deltax + (Keys [3] - Keys[1]) * sin(player.angle);
     float y_increment = (Keys[0] - Keys[2]) * player.deltay + (Keys[1] - Keys[3]) * cos(player.angle);
@@ -64,6 +67,39 @@ void gestBullet(){
     }
 }
 
+
+void DeleteBullet(Bullet_t * bullet){
+    Bullet_t * curr = player.bullet_list;
+    if (curr == bullet){
+        player.bullet_list = curr->next;
+        free(curr);
+    }
+    else {
+        while (curr->next != bullet){
+            curr = curr->next;
+        }
+        curr->next = bullet->next;
+        free(bullet);
+    }
+}
+
+
+void DeleteEnnemy(Ennemy_t * ennemy){
+    Ennemy_t * curr = ennemy_head;
+    if (curr == ennemy){
+        ennemy_head = curr->next;
+        free(curr);
+    }
+    else {
+        while (curr->next != ennemy){
+            curr = curr->next;
+        }
+        curr->next = ennemy->next;
+        free(ennemy);
+    }
+}
+
+
 void updatePlayerShootTimer(){
     if (player.shoot_timer > 0){
         player.shoot_timer--;
@@ -72,43 +108,23 @@ void updatePlayerShootTimer(){
 
 void checkHitEnnemy(Ennemy_t * ennemy_head){
     Ennemy_t * tmp = ennemy_head;
+    Ennemy_t * tmp2 = ennemy_head;
+
+    Bullet_t * tmp_bullet2;
     while (tmp != NULL){
         Bullet_t * tmp_bullet = player.bullet_list;
         while (tmp_bullet != NULL){
-            if (fabs(tmp->x - tmp_bullet->x) < BLOCK_SIZE * 2 && fabs(tmp->y - tmp_bullet->y) < BLOCK_SIZE/2){
-                tmp_bullet->speed = 0;
-                tmp_bullet->x = 0;
-                tmp_bullet->y = 0;
-                tmp_bullet = tmp_bullet->next;
-                printf("hit\n");
-                tmp->hp -= 1;
-                printf("ennemy hp: %d\n", tmp->hp);
-            }
-            else {
-                tmp_bullet = tmp_bullet->next;
-            }
-        }
-        tmp = tmp->next;
-    }
-}
-
-
-void checkDeadEnnemies(){
-    Ennemy_t * tmp = ennemy_head;
-    while (tmp != NULL){
-        if (tmp->hp <= 0){
-            if (tmp == ennemy_head){
-                ennemy_head = ennemy_head->next;
-            }
-            else {
-                Ennemy_t * tmp_prev = ennemy_head;
-                while (tmp_prev->next != tmp){
-                    tmp_prev = tmp_prev->next;
+            if (fabs(tmp->x - tmp_bullet->x) < BLOCK_SIZE * 2 && fabs(tmp->y - tmp_bullet->y) < BLOCK_SIZE/4){
+                tmp->hp--;
+                if (tmp->hp == 0){
+                    tmp2 = tmp->next;
+                    DeleteEnnemy(tmp);
+                    tmp->next = tmp2;
                 }
-                tmp_prev->next = tmp->next;
             }
-            free(tmp);
+            tmp_bullet = tmp_bullet->next;
         }
+
         tmp = tmp->next;
     }
 }
@@ -127,5 +143,4 @@ void gestAll(){
     gestBullet();
     updatePlayerShootTimer();
     checkHitEnnemy(ennemy_head);
-    checkDeadEnnemies();
 }

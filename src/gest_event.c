@@ -29,7 +29,7 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                     }
                     continue;
 
-                case SDL_MOUSEBUTTONUP:
+                case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT){
                         Shoot();
                     }
