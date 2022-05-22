@@ -3,9 +3,6 @@
 Player_t player;
 Ennemy_t * ennemy_head;
 
-getDistance(float x1, float y1, float x2, float y2){
-    return sqrt(pow(x1-x2, 2) + pow(y1-y2, 2));
-}
 
 void gestMovement(){
     float x_increment = (Keys[0] - Keys[2]) * player.deltax + (Keys [3] - Keys[1]) * sin(player.angle);
@@ -20,19 +17,19 @@ void gestMovement(){
     }
 }
 
-void initEnnemy(Ennemy_t * ennemy){
-    ennemy->x = rand()% MAPSIZE * BLOCK_SIZE;
-    ennemy->y = rand()% MAPSIZE * BLOCK_SIZE;
+void initEnnemy(Ennemy_t * ennemy, int x, int y){
+    ennemy->x = x;
+    ennemy->y = y;
     ennemy->angle = 0;
     ennemy->deltax = 0;
     ennemy->deltay = 0;
-    ennemy->hp = 5;
+    ennemy->hp = 1;
 }
 
 void SpawnEnnemies(int n){
     for (int i = 0; i < n; i++){
         Ennemy_t * new_ennemy = (Ennemy_t *) malloc(sizeof(Ennemy_t));
-        initEnnemy(new_ennemy);
+        initEnnemy(new_ennemy, rand()% MAPSIZE * BLOCK_SIZE, rand()% MAPSIZE * BLOCK_SIZE);
         new_ennemy->next = ennemy_head;
         ennemy_head = new_ennemy;
     }
@@ -62,15 +59,16 @@ void Shoot(){
     }
 }
 
-void gestBullet(){
-    Bullet_t * tmp = player.bullet_list;
-    while (tmp != NULL){
-        tmp->x += tmp->deltax * tmp->speed;
-        tmp->y += tmp->deltay * tmp->speed;
-        tmp = tmp->next;
+int checkHitEnnemy(Ennemy_t * ennemy, Bullet_t * bullet){
+    int return_value = 0;
+    if (dist(ennemy->x, ennemy->y, bullet->x, bullet->y) < BLOCK_SIZE){
+        ennemy->hp--;
+        if (ennemy->hp == 0){
+            return_value = 1;
+        }
     }
+    return return_value;
 }
-
 
 void DeleteBullet(Bullet_t * bullet){
     Bullet_t * curr = player.bullet_list;
@@ -91,8 +89,7 @@ void DeleteBullet(Bullet_t * bullet){
 void DeleteEnnemy(Ennemy_t * ennemy){
     Ennemy_t * curr = ennemy_head;
     if (curr == ennemy){
-        ennemy_head = curr->next;
-        free(curr);
+        initEnnemy(curr, 0, 0);
     }
     else {
         while (curr->next != ennemy){
@@ -103,33 +100,31 @@ void DeleteEnnemy(Ennemy_t * ennemy){
     }
 }
 
+void gestBullet(){
+    Bullet_t * tmp = player.bullet_list;
+    Bullet_t * prev = NULL;
+    Ennemy_t * tmp_ennemy;
+    while (tmp != NULL){
+        tmp->x += tmp->deltax * tmp->speed;
+        tmp->y += tmp->deltay * tmp->speed;
+        tmp_ennemy = ennemy_head;
+        while (tmp_ennemy != NULL){
+            if (checkHitEnnemy(tmp_ennemy, tmp)){
+                DeleteEnnemy(tmp_ennemy);
+                break;
+            }
+            else {
+                tmp_ennemy = tmp_ennemy->next;
+            }
+        }
+        tmp = tmp->next;
+    }
+}
+
 
 void updatePlayerShootTimer(){
     if (player.shoot_timer > 0){
         player.shoot_timer--;
-    }
-}
-
-void checkHitEnnemy(Ennemy_t * ennemy_head){
-    Ennemy_t * tmp = ennemy_head;
-    Ennemy_t * tmp2 = ennemy_head;
-
-    Bullet_t * tmp_bullet2;
-    while (tmp != NULL){
-        Bullet_t * tmp_bullet = player.bullet_list;
-        while (tmp_bullet != NULL){
-            if (getDistance(tmp->x, tmp->y, tmp_bullet->x, tmp_bullet->y) < BLOCK_SIZE){
-                tmp->hp--;
-                if (tmp->hp == 0){
-                    tmp2 = tmp->next;
-                    DeleteEnnemy(tmp);
-                    tmp->next = tmp2;
-                }
-            }
-            tmp_bullet = tmp_bullet->next;
-        }
-
-        tmp = tmp->next;
     }
 }
 
@@ -146,5 +141,4 @@ void gestAll(){
     gestMovement();
     gestBullet();
     updatePlayerShootTimer();
-    checkHitEnnemy(ennemy_head);
 }
