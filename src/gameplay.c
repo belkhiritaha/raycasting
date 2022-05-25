@@ -13,7 +13,11 @@ void gestMovement(){
         if (map[(int)newpos_y][(int)newpos_x] != 1){
             player.x += x_increment * MV_SPEED;
             player.y += y_increment * MV_SPEED;
+            player.isMoving = 1;
         }
+    }
+    if (x_increment == 0 && y_increment == 0){
+        player.isMoving = 0;
     }
 }
 
@@ -61,7 +65,7 @@ void Shoot(){
 
 int checkHitEnnemy(Ennemy_t * ennemy, Bullet_t * bullet){
     int return_value = 0;
-    if (dist(ennemy->x, ennemy->y, bullet->x, bullet->y) < BLOCK_SIZE){
+    if (dist(ennemy->x, ennemy->y, bullet->x, bullet->y) < BLOCK_SIZE/2){
         ennemy->hp--;
         if (ennemy->hp == 0){
             return_value = 1;

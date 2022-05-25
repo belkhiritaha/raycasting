@@ -6,5 +6,6 @@
 #define MAPSIZE 50
 extern int map[MAPSIZE][MAPSIZE];
 void printMap(int map[MAPSIZE][MAPSIZE]);
+void readMap(int map[MAPSIZE][MAPSIZE]);
 
 #endif

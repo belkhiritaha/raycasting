@@ -31,6 +31,9 @@ extern int Window_Width;
 
 extern int DrawHitEffect;
 
+extern int startTime;
+extern int currTime;
+extern double elapsedTime;
 
 int BouclePrincipale();
 

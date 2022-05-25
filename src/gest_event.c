@@ -2,6 +2,7 @@
 
 int Keys[NB_KEYS];
 
+
 void * gestInputOnTerrain(SDL_Renderer * renderer){
         SDL_Event event;
         while(SDL_PollEvent(&event)){
@@ -32,6 +33,12 @@ void * gestInputOnTerrain(SDL_Renderer * renderer){
                 case SDL_MOUSEBUTTONDOWN:
                     if (event.button.button == SDL_BUTTON_LEFT){
                         Shoot();
+
+                        currTime = SDL_GetTicks();
+                        elapsedTime = (currTime - startTime) / 1000.0;
+                        printf("%f\n", elapsedTime);
+
+
                     }
                     continue;
                 // mouse movement

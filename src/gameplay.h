@@ -21,6 +21,7 @@ typedef struct Player {
     float deltax;
     float deltay;
     int shoot_timer;
+    int isMoving;
     struct Bullet * bullet_list;
 } Player_t;
 

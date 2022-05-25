@@ -4,6 +4,11 @@ SDL_Window * window = NULL;
 SDL_Renderer * renderer = NULL;
 
 
+int startTime = 0;
+int currTime = 0;
+double elapsedTime = 0;
+
+
 int Window_Height;
 int Window_Width;
 
@@ -303,7 +308,7 @@ void drawBullet2(Bullet_t * b, Player_t * player, SDL_Renderer *renderer){
         float draw_y =  drawincenter - MAPSIZE * ennemy_dist/100000;
 
         if (ennemy_length < 10) {
-            DeleteBullet(b);
+           // DeleteBullet(b);
         }
 
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -417,7 +422,15 @@ void drawSkyGround(){
 }
 
 void drawPOVHands(){
-    SDL_Rect rect = {0, 0, screen_width, screen_height};
+    // if player is moving
+    SDL_Rect rect;
+    rect.x = 0;
+    rect.y = 20;
+    rect.w = screen_width;
+    rect.h = screen_height;
+    if (player.isMoving){
+        rect.y = 0;
+    }
     SDL_RenderCopy(renderer, POVTexture, NULL, &rect);
 }
 
@@ -441,7 +454,7 @@ void AffichageNormal(float fps){
         b = b->next;
     }
 
-    drawMap(map, renderer);
+    //drawMap(map, renderer);
     drawPOVHands();
     SDL_RenderPresent(renderer);
 }
@@ -499,9 +512,12 @@ int BouclePrincipale(){
 
     //GameOption = ON_MAP;
 
+    startTime = SDL_GetTicks();
 
     while (running)
     {
+        currTime = SDL_GetTicks();
+        elapsedTime = (currTime - startTime) / 1000.0;
         a = SDL_GetTicks();
         delta = a - b;
         if (delta > FPS_TO_GET){
